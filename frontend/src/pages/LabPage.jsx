@@ -42,7 +42,7 @@ export default function LabPage({ token, onLogout }) {
 
   const handleExperiment = async () => {
     if (selectedIngredients.length === 0) {
-      setMessage('❌ Select at least one ingredient');
+      setMessage('Selectionnez au moins un ingredient');
       return;
     }
 
@@ -55,7 +55,7 @@ export default function LabPage({ token, onLogout }) {
         loadDiscoveredRecipes();
       }
     } catch (err) {
-      setMessage('❌ Experiment failed');
+      setMessage('L\'experience a echoue');
     }
   };
 
@@ -67,16 +67,17 @@ export default function LabPage({ token, onLogout }) {
   return (
     <div className="lab-container">
       <header className="lab-header">
-        <h1>🔬 The Lab - Discover Recipes</h1>
+        <h1>Le Laboratoire - Decouvrir des Recettes</h1>
         <div className="header-actions">
-          <Link to="/recipes" className="nav-button">📖 My Recipes</Link>
-          <button onClick={onLogout} className="logout-btn">Logout</button>
+          <Link to="/service" className="nav-button">Service</Link>
+          <Link to="/recipes" className="nav-button">Mes Recettes</Link>
+          <button onClick={onLogout} className="logout-btn">Deconnexion</button>
         </div>
       </header>
 
       <div className="lab-content">
         <div className="ingredients-section">
-          <h2>Available Ingredients</h2>
+          <h2>Ingredients disponibles</h2>
           <div className="ingredients-grid">
             {ingredients.map((ing) => (
               <button
@@ -92,10 +93,10 @@ export default function LabPage({ token, onLogout }) {
         </div>
 
         <div className="experiment-section">
-          <h2>Current Mix</h2>
+          <h2>Melange actuel</h2>
           <div className="selected-ingredients">
             {selectedIngredients.length === 0 ? (
-              <p className="empty-state">Click ingredients to add them...</p>
+              <p className="empty-state">Cliquez sur les ingredients pour les ajouter...</p>
             ) : (
               selectedIngredients.map((ing, idx) => (
                 <div key={idx} className="ingredient-tag">
@@ -108,15 +109,15 @@ export default function LabPage({ token, onLogout }) {
 
           <div className="experiment-buttons">
             <button onClick={handleExperiment} className="btn-experiment">
-              🔭 Experiment
+              Experimenter
             </button>
             <button onClick={handleClear} className="btn-clear">
-              Clear
+              Effacer
             </button>
           </div>
 
           {message && (
-            <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>
+            <div className={`message ${message.includes('Recette decouverte') ? 'success' : 'error'}`}>
               {message}
             </div>
           )}
@@ -124,7 +125,7 @@ export default function LabPage({ token, onLogout }) {
 
         {discoveredRecipes.length > 0 && (
           <div className="discovered-section">
-            <h2>Discovered Recipes ({discoveredRecipes.length})</h2>
+            <h2>Recettes decouvertes ({discoveredRecipes.length})</h2>
             <div className="recipes-list">
               {discoveredRecipes.map((recipe) => (
                 <div key={recipe._id} className="recipe-card">

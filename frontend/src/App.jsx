@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import LabPage from './pages/LabPage';
 import RecipesPage from './pages/RecipesPage';
+import ServicePage from './pages/ServicePage';
 import './App.css';
 
 function App() {
@@ -43,6 +44,10 @@ function App() {
         <Route 
           path="/recipes" 
           element={token ? <RecipesPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/service" 
+          element={token ? <ServicePage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
       </Routes>
     </BrowserRouter>

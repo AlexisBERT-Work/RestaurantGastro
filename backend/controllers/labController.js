@@ -9,7 +9,7 @@ exports.experimentAndMatch = async (req, res) => {
     const userId = req.userId;
 
     if (!combinedIngredients || combinedIngredients.length === 0) {
-      return res.status(400).json({ message: '❌ No ingredients provided' });
+      return res.status(400).json({ message: 'Aucun ingredient fourni' });
     }
 
     // Get all recipes
@@ -45,19 +45,19 @@ exports.experimentAndMatch = async (req, res) => {
 
       return res.json({
         success: true,
-        message: `✅ Recipe discovered! "${matchedRecipe.name}"`,
+        message: `Recette decouverte ! "${matchedRecipe.name}"`,
         recipe: matchedRecipe
       });
     } else {
       // No match
       return res.json({
         success: false,
-        message: '❌ Invalid combination. Ingredients destroyed!'
+        message: 'Combinaison invalide. Ingredients detruits !'
       });
     }
   } catch (err) {
     console.error('Experiment Error:', err);
-    res.status(500).json({ message: '❌ Server error', error: err.message });
+    res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };
 
@@ -68,7 +68,7 @@ exports.getAllRecipes = async (req, res) => {
     res.json({ recipes });
   } catch (err) {
     console.error('Get recipes Error:', err);
-    res.status(500).json({ message: '❌ Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
@@ -79,9 +79,9 @@ exports.getUserRecipes = async (req, res) => {
     const userRecipes = await UserRecipe.find({ userId, discovered: true })
       .populate('recipeId');
     
-    res.json({ recipes: userRecipes.map(ur => ur.recipeId) });
+    res.json({ recipes: userRecipes.map(ur => ur.recipeId).filter(r => r !== null) });
   } catch (err) {
     console.error('Get user recipes Error:', err);
-    res.status(500).json({ message: '❌ Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 };

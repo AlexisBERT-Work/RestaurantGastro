@@ -25,20 +25,21 @@ export default function RecipesPage({ token, onLogout }) {
   return (
     <div className="recipes-container">
       <header className="recipes-header">
-        <h1>📖 My Recipe Book</h1>
+        <h1>Mon Livre de Recettes</h1>
         <div className="header-actions">
-          <Link to="/lab" className="nav-button">🔬 Back to Lab</Link>
-          <button onClick={onLogout} className="logout-btn">Logout</button>
+          <Link to="/lab" className="nav-button">Laboratoire</Link>
+          <Link to="/service" className="nav-button">Service</Link>
+          <button onClick={onLogout} className="logout-btn">Deconnexion</button>
         </div>
       </header>
 
       <div className="recipes-content">
         {loading ? (
-          <p className="loading">⏳ Loading recipes...</p>
+          <p className="loading">Chargement des recettes...</p>
         ) : recipes.length === 0 ? (
           <div className="empty-state">
-            <p>No recipes discovered yet!</p>
-            <p>Go to the <Link to="/lab">lab</Link> to experiment and discover recipes.</p>
+            <p>Aucune recette decouverte pour le moment !</p>
+            <p>Allez au <Link to="/lab">laboratoire</Link> pour experimenter et decouvrir des recettes.</p>
           </div>
         ) : (
           <div className="recipes-grid">
@@ -47,10 +48,10 @@ export default function RecipesPage({ token, onLogout }) {
                 <h3>{recipe.name}</h3>
                 <p className="description">{recipe.description}</p>
                 <div className="difficulty">
-                  <span>Difficulty: <strong>{recipe.difficulty}</strong></span>
+                  <span>Difficulte : <strong>{recipe.difficulty}</strong></span>
                 </div>
                 <div className="ingredients">
-                  <h4>Ingredients:</h4>
+                  <h4>Ingredients :</h4>
                   <ul>
                     {recipe.requiredIngredients.map((ing, idx) => (
                       <li key={idx}>{ing.name} x{ing.quantity}</li>

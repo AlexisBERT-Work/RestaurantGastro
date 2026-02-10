@@ -3,105 +3,164 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
+  position: relative;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(212, 165, 67, 0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .auth-box {
-  background: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  background: var(--glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 48px 40px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow), 0 0 80px rgba(212, 165, 67, 0.05);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  position: relative;
+  animation: authAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .auth-box h1 {
-  color: #667eea;
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
   text-align: center;
-  margin-bottom: 10px;
-  font-size: 32px;
+  margin-bottom: 4px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .auth-box h2 {
-  color: #333;
+  color: var(--text-secondary);
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 24px;
+  margin-bottom: 36px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: #333;
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.3s;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: rgba(212, 165, 67, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(212, 165, 67, 0.08);
 }
 
 button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background: #667eea;
-  color: white;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #0a0a0f;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
   margin-top: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 button[type="submit"]:hover:not(:disabled) {
-  background: #764ba2;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  box-shadow: 0 4px 20px rgba(212, 165, 67, 0.3);
+  transform: translateY(-1px);
 }
 
 button[type="submit"]:disabled {
-  background: #999;
+  background: var(--text-muted);
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 8px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
   margin-bottom: 20px;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.15);
 }
 
 .toggle-auth {
   text-align: center;
-  margin-top: 20px;
-  color: #666;
+  margin-top: 28px;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .toggle-btn {
   background: none;
   border: none;
-  color: #667eea;
+  color: var(--gold);
   cursor: pointer;
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  transition: var(--transition);
 }
 
 .toggle-btn:hover {
-  color: #764ba2;
+  color: var(--gold-light);
+  text-shadow: 0 0 20px rgba(212, 165, 67, 0.3);
 }

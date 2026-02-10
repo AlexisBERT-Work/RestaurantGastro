@@ -9,8 +9,8 @@ const ingredientSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['vegetable', 'meat', 'cheese', 'spice', 'sauce', 'other'],
-    default: 'other'
+    enum: ['legume', 'viande', 'fromage', 'epice', 'sauce', 'autre'],
+    default: 'autre'
   },
   description: {
     type: String,

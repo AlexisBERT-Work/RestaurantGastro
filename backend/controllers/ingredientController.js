@@ -6,7 +6,7 @@ exports.getAllIngredients = async (req, res) => {
     res.json({ ingredients });
   } catch (err) {
     console.error('Get ingredients Error:', err);
-    res.status(500).json({ message: '❌ Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
@@ -15,7 +15,7 @@ exports.addIngredient = async (req, res) => {
     const { name, category, description } = req.body;
 
     if (!name) {
-      return res.status(400).json({ message: '❌ Ingredient name required' });
+      return res.status(400).json({ message: 'Nom de l\'ingredient requis' });
     }
 
     const ingredient = new Ingredient({
@@ -27,11 +27,11 @@ exports.addIngredient = async (req, res) => {
     await ingredient.save();
 
     res.status(201).json({
-      message: '✅ Ingredient added',
+      message: 'Ingredient ajoute',
       ingredient
     });
   } catch (err) {
     console.error('Add ingredient Error:', err);
-    res.status(500).json({ message: '❌ Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 };

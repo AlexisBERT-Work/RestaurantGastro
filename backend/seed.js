@@ -6,109 +6,114 @@ const Ingredient = require('./models/Ingredient');
 
 // Seed data
 const ingredientsData = [
-  { name: 'Tomato', category: 'vegetable', description: 'Fresh red tomato' },
-  { name: 'Basil', category: 'spice', description: 'Italian basil' },
-  { name: 'Mozzarella', category: 'cheese', description: 'Fresh mozzarella cheese' },
-  { name: 'Olive Oil', category: 'sauce', description: 'Extra virgin olive oil' },
-  { name: 'Chicken', category: 'meat', description: 'Fresh chicken breast' },
-  { name: 'Garlic', category: 'vegetable', description: 'Fresh garlic cloves' },
-  { name: 'Onion', category: 'vegetable', description: 'Yellow onion' },
-  { name: 'Pasta', category: 'other', description: 'Italian pasta' },
-  { name: 'Salt', category: 'spice', description: 'Sea salt' },
-  { name: 'Pepper', category: 'spice', description: 'Black pepper powder' },
-  { name: 'Butter', category: 'other', description: 'Unsalted butter' },
-  { name: 'Cream', category: 'sauce', description: 'Heavy cream' },
-  { name: 'Beef', category: 'meat', description: 'Ground beef' },
-  { name: 'Flour', category: 'other', description: 'All-purpose flour' },
-  { name: 'Parmesan', category: 'cheese', description: 'Parmesan cheese' }
+  { name: 'Tomate', category: 'legume', description: 'Tomate rouge fraiche' },
+  { name: 'Basilic', category: 'epice', description: 'Basilic italien' },
+  { name: 'Mozzarella', category: 'fromage', description: 'Mozzarella fraiche' },
+  { name: 'Huile d\'olive', category: 'sauce', description: 'Huile d\'olive extra vierge' },
+  { name: 'Poulet', category: 'viande', description: 'Blanc de poulet frais' },
+  { name: 'Ail', category: 'legume', description: 'Gousses d\'ail fraiches' },
+  { name: 'Oignon', category: 'legume', description: 'Oignon jaune' },
+  { name: 'Pates', category: 'autre', description: 'Pates italiennes' },
+  { name: 'Sel', category: 'epice', description: 'Sel de mer' },
+  { name: 'Poivre', category: 'epice', description: 'Poivre noir moulu' },
+  { name: 'Beurre', category: 'autre', description: 'Beurre doux' },
+  { name: 'Creme', category: 'sauce', description: 'Creme epaisse' },
+  { name: 'Boeuf', category: 'viande', description: 'Boeuf hache' },
+  { name: 'Farine', category: 'autre', description: 'Farine tout usage' },
+  { name: 'Parmesan', category: 'fromage', description: 'Fromage parmesan' }
 ];
 
 const recipesData = [
   {
-    name: 'Caprese Salad',
+    name: 'Salade Caprese',
     requiredIngredients: [
-      { name: 'Tomato', quantity: 3 },
+      { name: 'Tomate', quantity: 3 },
       { name: 'Mozzarella', quantity: 1 },
-      { name: 'Basil', quantity: 5 },
-      { name: 'Olive Oil', quantity: 2 }
+      { name: 'Basilic', quantity: 5 },
+      { name: 'Huile d\'olive', quantity: 2 }
     ],
-    description: 'A classic Italian fresh salad',
-    difficulty: 'easy'
+    description: 'Une salade fraiche italienne classique',
+    difficulty: 'facile',
+    price: 35
   },
   {
     name: 'Spaghetti Carbonara',
     requiredIngredients: [
-      { name: 'Pasta', quantity: 400 },
-      { name: 'Cream', quantity: 200 },
+      { name: 'Pates', quantity: 400 },
+      { name: 'Creme', quantity: 200 },
       { name: 'Parmesan', quantity: 100 },
-      { name: 'Salt', quantity: 1 },
-      { name: 'Pepper', quantity: 1 }
+      { name: 'Sel', quantity: 1 },
+      { name: 'Poivre', quantity: 1 }
     ],
-    description: 'Creamy Roman pasta dish',
-    difficulty: 'medium'
+    description: 'Plat de pates cremeuses a la romaine',
+    difficulty: 'moyen',
+    price: 55
   },
   {
-    name: 'Garlic Chicken',
+    name: 'Poulet a l\'ail',
     requiredIngredients: [
-      { name: 'Chicken', quantity: 1 },
-      { name: 'Garlic', quantity: 4 },
-      { name: 'Olive Oil', quantity: 3 },
-      { name: 'Salt', quantity: 1 },
-      { name: 'Pepper', quantity: 1 }
+      { name: 'Poulet', quantity: 1 },
+      { name: 'Ail', quantity: 4 },
+      { name: 'Huile d\'olive', quantity: 3 },
+      { name: 'Sel', quantity: 1 },
+      { name: 'Poivre', quantity: 1 }
     ],
-    description: 'Delicious roasted chicken with garlic',
-    difficulty: 'easy'
+    description: 'Delicieux poulet roti a l\'ail',
+    difficulty: 'facile',
+    price: 45
   },
   {
-    name: 'Beef Burger',
+    name: 'Burger au boeuf',
     requiredIngredients: [
-      { name: 'Beef', quantity: 200 },
-      { name: 'Onion', quantity: 1 },
-      { name: 'Salt', quantity: 1 },
-      { name: 'Pepper', quantity: 1 }
+      { name: 'Boeuf', quantity: 200 },
+      { name: 'Oignon', quantity: 1 },
+      { name: 'Sel', quantity: 1 },
+      { name: 'Poivre', quantity: 1 }
     ],
-    description: 'Juicy homemade burger',
-    difficulty: 'easy'
+    description: 'Burger maison juteux',
+    difficulty: 'facile',
+    price: 40
   },
   {
-    name: 'Creamy Mushroom Pasta',
+    name: 'Pates aux champignons a la creme',
     requiredIngredients: [
-      { name: 'Pasta', quantity: 400 },
-      { name: 'Cream', quantity: 200 },
-      { name: 'Butter', quantity: 50 },
-      { name: 'Garlic', quantity: 2 }
+      { name: 'Pates', quantity: 400 },
+      { name: 'Creme', quantity: 200 },
+      { name: 'Beurre', quantity: 50 },
+      { name: 'Ail', quantity: 2 }
     ],
-    description: 'Rich creamy pasta with a savory taste',
-    difficulty: 'medium'
+    description: 'Pates cremeuses au gout savoureux',
+    difficulty: 'moyen',
+    price: 50
   }
 ];
 
 const seedDatabase = async () => {
   try {
-    console.log('🔄 Connecting to MongoDB...');
+    console.log('[INFO] Connexion a MongoDB...');
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('✅ MongoDB Connected');
+    console.log('[OK] MongoDB connecte');
 
     // Clear existing data
     await Ingredient.deleteMany({});
     await Recipe.deleteMany({});
-    console.log('🗑️  Cleared existing data');
+    console.log('[INFO] Donnees existantes supprimees');
 
     // Insert ingredients
     const ingredients = await Ingredient.insertMany(ingredientsData);
-    console.log(`✅ ${ingredients.length} ingredients created`);
+    console.log(`[OK] ${ingredients.length} ingredients crees`);
 
     // Insert recipes
     const recipes = await Recipe.insertMany(recipesData);
-    console.log(`✅ ${recipes.length} recipes created`);
+    console.log(`[OK] ${recipes.length} recettes creees`);
 
-    console.log('🎉 Database seeding completed!');
+    console.log('[OK] Base de donnees initialisee avec succes !');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Seeding error:', err);
+    console.error('[ERREUR] Erreur de seed:', err);
     process.exit(1);
   }
 };

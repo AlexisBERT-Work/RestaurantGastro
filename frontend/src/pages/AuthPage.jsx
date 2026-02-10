@@ -50,15 +50,15 @@ export default function AuthPage({ onLogin }) {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1>🍽️ GastroChef - The Lost Menu</h1>
-        <h2>{isLogin ? 'Login' : 'Register'}</h2>
+        <h1>GastroChef - Le Menu Perdu</h1>
+        <h2>{isLogin ? 'Connexion' : 'Inscription'}</h2>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <div className="form-group">
-              <label>Restaurant Name</label>
+              <label>Nom du restaurant</label>
               <input
                 type="text"
                 name="restaurantName"
@@ -83,7 +83,7 @@ export default function AuthPage({ onLogin }) {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>Mot de passe</label>
             <input
               type="password"
               name="password"
@@ -96,7 +96,7 @@ export default function AuthPage({ onLogin }) {
 
           {!isLogin && (
             <div className="form-group">
-              <label>Confirm Password</label>
+              <label>Confirmer le mot de passe</label>
               <input
                 type="password"
                 name="passwordConfirm"
@@ -109,19 +109,19 @@ export default function AuthPage({ onLogin }) {
           )}
 
           <button type="submit" disabled={loading}>
-            {loading ? '⏳ Loading...' : isLogin ? 'Login' : 'Register'}
+            {loading ? 'Chargement...' : isLogin ? 'Se connecter' : 'S\'inscrire'}
           </button>
         </form>
 
         <div className="toggle-auth">
           <p>
-            {isLogin ? "Don't have an account? " : 'Already have an account? '}
+            {isLogin ? "Pas encore de compte ? " : 'Deja un compte ? '}
             <button 
               type="button" 
               onClick={() => setIsLogin(!isLogin)}
               className="toggle-btn"
             >
-              {isLogin ? 'Register' : 'Login'}
+              {isLogin ? 'S\'inscrire' : 'Se connecter'}
             </button>
           </p>
         </div>

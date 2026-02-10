@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  satisfaction: {
+    type: Number,
+    default: 20
+  },
+  isServiceActive: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

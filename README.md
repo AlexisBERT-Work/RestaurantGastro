@@ -61,26 +61,40 @@ npm run dev
 
 ---
 
-## 📋 Fonctionnalités Implémentées (MVP - Niveau 10/20)
+## 📋 Fonctionnalités Implémentées
 
-### ✅ Phase 1 - Authentification (JWT)
+### ✅ Phase 1 - Authentification (JWT) - Niveau 10/20
 - ✓ Page de Register/Login
 - ✓ Hashage de password (bcryptjs)
 - ✓ Génération de token JWT
 - ✓ Protection des routes (middleware auth)
 - ✓ Persistance des données utilisateur
 
-### ✅ Phase 2 - Le Laboratoire (Core Gameplay)
+### ✅ Phase 2 - Le Laboratoire (Core Gameplay) - Niveau 10/20
 - ✓ Interface pour ajouter des ingrédients (UI drag-friendly)
 - ✓ Algorithme de matching Ingrédients ↔️ Recettes
 - ✓ Succès: Ingrédients valides → Recette débloquée
 - ✓ Échec: Combinaison invalide → Ingrédients détruits
 - ✓ Sauvegarde des recettes découvertes en base MongoDB
 
-### ✅ Phase 3 - Livre des Recettes
+### ✅ Phase 3 - Livre des Recettes - Niveau 10/20
 - ✓ Page récapitulatif des recettes découvertes
 - ✓ Détails: Ingrédients requis, difficulté, description
 - ✓ Affichage élégant en grid responsive
+
+### ✅ Phase 4 - Le Service (Temps Réel) - Niveau 13/20
+- ✓ **WebSockets (Socket.io)**: Commandes aléatoires poussées en temps réel
+- ✓ **Authentification Socket**: Vérification JWT sur connexion WebSocket
+- ✓ **Flux de commandes**: Génération automatique de commandes aléatoires
+- ✓ **Timer d'expiration**: Chaque commande a un délai (30s) avant rejet
+- ✓ **Bouton Servir**: Actif uniquement si recette connue
+- ✓ **Bouton Rejeter**: Le joueur peut rejeter une commande (-10 satisfaction)
+- ✓ **Satisfaction client**: Système d'avis (+1 servi, -10 rejeté/expiré)
+- ✓ **Score initial**: 20 points de satisfaction au démarrage
+- ✓ **Game Over**: Si satisfaction < 0, le restaurant est fermé
+- ✓ **Barre de progression**: Timer visuel par commande
+- ✓ **Journal d'activité**: Log en temps réel des événements
+- ✓ **Interface immersive**: Design dark theme pour le service
 
 ---
 
@@ -104,7 +118,7 @@ npm run dev
   name: String,
   requiredIngredients: [{ name: String, quantity: Number }],
   description: String,
-  difficulty: enum('easy', 'medium', 'hard'),
+  difficulty: enum('facile', 'moyen', 'difficile'),
   createdAt: Date
 }
 ```
@@ -113,7 +127,7 @@ npm run dev
 ```javascript
 {
   name: String (unique),
-  category: enum('vegetable', 'meat', 'cheese', 'spice', 'sauce', 'other'),
+  category: enum('legume', 'viande', 'fromage', 'epice', 'sauce', 'autre'),
   description: String,
   createdAt: Date
 }
@@ -150,6 +164,30 @@ GET    /api/lab/recipes/my       - Voir mes recettes découvertes
 ```
 GET    /api/recipes              - Lister les ingrédients
 POST   /api/recipes              - Ajouter un ingrédient (admin)
+```
+
+### Service (Protected)
+```
+GET    /api/service/state        - État du service (satisfaction, actif)
+POST   /api/service/start        - Démarrer le service
+POST   /api/service/stop         - Arrêter le service
+POST   /api/service/serve        - Servir une commande
+GET    /api/service/discovered   - IDs des recettes découvertes
+```
+
+### WebSocket Events (Socket.io)
+```
+→ service:start               - Client démarre le service
+→ service:stop                - Client arrête le service
+→ order:serve                 - Client sert une commande
+→ order:reject                - Client rejette une commande
+← service:started             - Confirmation service démarré
+← service:stopped             - Confirmation service arrêté
+← service:gameover            - Game over (satisfaction < 0)
+← order:new                   - Nouvelle commande entrante
+← order:expired               - Commande expirée (timeout)
+← order:serve_result          - Résultat du service
+← order:rejected              - Confirmation rejet commande
 ```
 
 ---
@@ -210,17 +248,19 @@ gastro-chef/
    - ✅ Match → Recette débloquée, sauvegardée en DB
    - ❌ No Match → Ingrédients perdus
 4. **Recipe Book** → Consulter toutes les recettes découvertes
+5. **Service** → Démarrer le service pour recevoir des commandes en temps réel
+   - ✅ Commande servie → +1 satisfaction
+   - ❌ Commande rejetée/expirée → -10 satisfaction
+   - 💀 Satisfaction < 0 → Game Over
 
 ---
 
-## 🚀 Améliorations Futures (Niveau 12-20)
+## 🚀 Améliorations Futures (Niveau 14-20)
 
 - [ ] **Économie**: Budget initial, achat ingrédients, gain par service
-- [ ] **Service (Temps Réel)**: Socket.io pour les commandes live
 - [ ] **Marketplace**: Interface d'achat d'ingrédients
 - [ ] **Stock Management**: Quantités, gestion inventaire
-- [ ] **Game Over**: Trésorerie < 0
-- [ ] **Difficulty Levels**: Easy/Normal/Hard recipes
+- [ ] **Game Over économique**: Trésorerie < 0
 - [ ] **Drag & Drop UI**: Interface plus immersive pour le lab
 - [ ] **Animations**: Transitions, feedback visuels
 - [ ] **Tests**: Jest (backend+frontend)
@@ -243,4 +283,4 @@ Projet créé pour le Projet B3 Fullstack - Sup de Vinci
 ---
 
 **Last Updated**: Février 2026  
-**MVP Status**: ✅ Niveau 10/20 Complété
+**Status**: ✅ Niveau 13/20 Complété (Service Temps Réel + Satisfaction Client)
