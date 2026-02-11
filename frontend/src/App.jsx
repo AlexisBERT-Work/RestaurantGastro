@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage';
 import LabPage from './pages/LabPage';
 import RecipesPage from './pages/RecipesPage';
 import ServicePage from './pages/ServicePage';
+import DashboardPage from './pages/DashboardPage';
 import './App.css';
 
 function App() {
@@ -45,9 +46,13 @@ function App() {
           path="/recipes" 
           element={token ? <RecipesPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
-        <Route 
-          path="/service" 
-          element={token ? <ServicePage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
+        <Route
+          path="/service"
+          element={token ? <ServicePage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/dashboard"
+          element={token ? <DashboardPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
         />
       </Routes>
     </BrowserRouter>

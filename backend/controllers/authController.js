@@ -37,7 +37,8 @@ exports.register = async (req, res) => {
       user: {
         id: user._id,
         restaurantName: user.restaurantName,
-        email: user.email
+        email: user.email,
+        treasury: user.treasury ?? 500
       }
     });
   } catch (err) {
@@ -75,7 +76,8 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         restaurantName: user.restaurantName,
-        email: user.email
+        email: user.email,
+        treasury: user.treasury ?? 500
       }
     });
   } catch (err) {

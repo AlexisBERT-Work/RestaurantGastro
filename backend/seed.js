@@ -3,24 +3,25 @@ require('dotenv').config();
 
 const Recipe = require('./models/Recipe');
 const Ingredient = require('./models/Ingredient');
+const UserIngredient = require('./models/UserIngredient');
 
 // Seed data
 const ingredientsData = [
-  { name: 'Tomate', category: 'legume', description: 'Tomate rouge fraiche' },
-  { name: 'Basilic', category: 'epice', description: 'Basilic italien' },
-  { name: 'Mozzarella', category: 'fromage', description: 'Mozzarella fraiche' },
-  { name: 'Huile d\'olive', category: 'sauce', description: 'Huile d\'olive extra vierge' },
-  { name: 'Poulet', category: 'viande', description: 'Blanc de poulet frais' },
-  { name: 'Ail', category: 'legume', description: 'Gousses d\'ail fraiches' },
-  { name: 'Oignon', category: 'legume', description: 'Oignon jaune' },
-  { name: 'Pates', category: 'autre', description: 'Pates italiennes' },
-  { name: 'Sel', category: 'epice', description: 'Sel de mer' },
-  { name: 'Poivre', category: 'epice', description: 'Poivre noir moulu' },
-  { name: 'Beurre', category: 'autre', description: 'Beurre doux' },
-  { name: 'Creme', category: 'sauce', description: 'Creme epaisse' },
-  { name: 'Boeuf', category: 'viande', description: 'Boeuf hache' },
-  { name: 'Farine', category: 'autre', description: 'Farine tout usage' },
-  { name: 'Parmesan', category: 'fromage', description: 'Fromage parmesan' }
+  { name: 'Tomate', category: 'legume', description: 'Tomate rouge fraiche', cost: 5 },
+  { name: 'Basilic', category: 'epice', description: 'Basilic italien', cost: 3 },
+  { name: 'Mozzarella', category: 'fromage', description: 'Mozzarella fraiche', cost: 12 },
+  { name: 'Huile d\'olive', category: 'sauce', description: 'Huile d\'olive extra vierge', cost: 8 },
+  { name: 'Poulet', category: 'viande', description: 'Blanc de poulet frais', cost: 15 },
+  { name: 'Ail', category: 'legume', description: 'Gousses d\'ail fraiches', cost: 3 },
+  { name: 'Oignon', category: 'legume', description: 'Oignon jaune', cost: 4 },
+  { name: 'Pates', category: 'autre', description: 'Pates italiennes', cost: 6 },
+  { name: 'Sel', category: 'epice', description: 'Sel de mer', cost: 2 },
+  { name: 'Poivre', category: 'epice', description: 'Poivre noir moulu', cost: 3 },
+  { name: 'Beurre', category: 'autre', description: 'Beurre doux', cost: 7 },
+  { name: 'Creme', category: 'sauce', description: 'Creme epaisse', cost: 10 },
+  { name: 'Boeuf', category: 'viande', description: 'Boeuf hache', cost: 20 },
+  { name: 'Farine', category: 'autre', description: 'Farine tout usage', cost: 4 },
+  { name: 'Parmesan', category: 'fromage', description: 'Fromage parmesan', cost: 15 }
 ];
 
 const recipesData = [
@@ -100,6 +101,7 @@ const seedDatabase = async () => {
     // Clear existing data
     await Ingredient.deleteMany({});
     await Recipe.deleteMany({});
+    await UserIngredient.deleteMany({});
     console.log('[INFO] Donnees existantes supprimees');
 
     // Insert ingredients

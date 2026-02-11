@@ -9,6 +9,9 @@ const jwt = require('jsonwebtoken');
 const Recipe = require('./models/Recipe');
 const User = require('./models/User');
 const UserRecipe = require('./models/UserRecipe');
+const Transaction = require('./models/Transaction');
+
+const PENALTY_AMOUNT = 15;
 
 const app = express();
 const server = http.createServer(app);
@@ -39,6 +42,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/lab', require('./routes/lab'));
 app.use('/api/recipes', require('./routes/recipes'));
 app.use('/api/service', require('./routes/service'));
+app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/ingredients', require('./routes/ingredients'));
 
 // Health Check
 app.get('/api/health', (req, res) => {
@@ -105,22 +110,35 @@ async function handleOrderExpired(userId, order, socket) {
 
     // -10 satisfaction for expired order
     user.satisfaction -= 10;
+    // Financial penalty
+    user.treasury = (user.treasury ?? 500) - PENALTY_AMOUNT;
     await user.save();
+
+    // Create penalty transaction
+    await new Transaction({
+      userId,
+      type: 'penalite',
+      amount: -PENALTY_AMOUNT,
+      description: `Penalite : commande expiree (${order.recipeName})`
+    }).save();
 
     socket.emit('order:expired', {
       orderId: order.id,
       recipeName: order.recipeName,
       satisfaction: user.satisfaction,
-      message: `Commande expiree : ${order.recipeName} ! (-10 satisfaction)`
+      treasury: user.treasury,
+      message: `Commande expiree : ${order.recipeName} ! (-10 satisfaction, -${PENALTY_AMOUNT}G)`
     });
 
-    // Check game over
-    if (user.satisfaction < 0) {
+    // Check game over (satisfaction or treasury)
+    if (user.satisfaction < 0 || user.treasury < 0) {
       socket.emit('service:gameover', {
         satisfaction: user.satisfaction,
-        message: 'Game Over ! La satisfaction est tombee en dessous de 0 !'
+        treasury: user.treasury,
+        message: user.treasury < 0
+          ? 'Game Over ! La tresorerie est tombee en dessous de 0 !'
+          : 'Game Over ! La satisfaction est tombee en dessous de 0 !'
       });
-      // Stop service
       stopServiceSession(userId);
       user.isServiceActive = false;
       await user.save();
@@ -212,7 +230,7 @@ io.on('connection', (socket) => {
       user.isServiceActive = true;
       await user.save();
 
-      socket.emit('service:started', { satisfaction: 20 });
+      socket.emit('service:started', { satisfaction: 20, treasury: user.treasury ?? 500 });
       startServiceSession(userId, socket);
     } catch (err) {
       console.error('Service start error:', err);
@@ -261,22 +279,34 @@ io.on('connection', (socket) => {
       if (Date.now() > orderEntry.order.expiresAt) {
         session.orders.delete(orderId);
         clearTimeout(orderEntry.timeoutId);
-        
+
         const user = await User.findById(userId);
         user.satisfaction -= 10;
+        user.treasury = (user.treasury ?? 500) - PENALTY_AMOUNT;
         await user.save();
+
+        await new Transaction({
+          userId,
+          type: 'penalite',
+          amount: -PENALTY_AMOUNT,
+          description: `Penalite : commande expiree (${orderEntry.order.recipeName})`
+        }).save();
 
         socket.emit('order:serve_result', {
           success: false,
           orderId,
           satisfaction: user.satisfaction,
-          message: `Trop tard ! Commande expiree. (-10 satisfaction)`
+          treasury: user.treasury,
+          message: `Trop tard ! Commande expiree. (-10 satisfaction, -${PENALTY_AMOUNT}G)`
         });
 
-        if (user.satisfaction < 0) {
+        if (user.satisfaction < 0 || user.treasury < 0) {
           socket.emit('service:gameover', {
             satisfaction: user.satisfaction,
-            message: 'Game Over ! La satisfaction est tombee en dessous de 0 !'
+            treasury: user.treasury,
+            message: user.treasury < 0
+              ? 'Game Over ! La tresorerie est tombee en dessous de 0 !'
+              : 'Game Over ! La satisfaction est tombee en dessous de 0 !'
           });
           stopServiceSession(userId);
           user.isServiceActive = false;
@@ -305,20 +335,33 @@ io.on('connection', (socket) => {
       clearTimeout(orderEntry.timeoutId);
       session.orders.delete(orderId);
 
-      // +1 satisfaction
+      // +1 satisfaction + revenue
       const user = await User.findById(userId);
       user.satisfaction += 1;
+      const revenue = orderEntry.order.price || 50;
+      user.treasury = (user.treasury ?? 500) + revenue;
       await user.save();
+
+      // Create sale transaction
+      await new Transaction({
+        userId,
+        type: 'vente_plat',
+        amount: revenue,
+        description: `Vente de ${orderEntry.order.recipeName}`,
+        recipeId: orderEntry.order.recipeId
+      }).save();
 
       socket.emit('order:serve_result', {
         success: true,
         orderId,
         recipeName: orderEntry.order.recipeName,
         satisfaction: user.satisfaction,
-        message: `Commande servie : ${orderEntry.order.recipeName} ! (+1 satisfaction)`
+        treasury: user.treasury,
+        revenue,
+        message: `Commande servie : ${orderEntry.order.recipeName} ! (+1 satisfaction, +${revenue}G)`
       });
 
-      console.log(`[SERVI] Par ${userId}: ${orderEntry.order.recipeName} | Satisfaction: ${user.satisfaction}`);
+      console.log(`[SERVI] Par ${userId}: ${orderEntry.order.recipeName} | Satisfaction: ${user.satisfaction} | Tresorerie: ${user.treasury}`);
     } catch (err) {
       console.error('Serve order error:', err);
       socket.emit('order:serve_result', {
@@ -341,23 +384,36 @@ io.on('connection', (socket) => {
       clearTimeout(orderEntry.timeoutId);
       session.orders.delete(orderId);
 
-      // -10 satisfaction for rejected order
+      // -10 satisfaction + financial penalty for rejected order
       const user = await User.findById(userId);
       user.satisfaction -= 10;
+      user.treasury = (user.treasury ?? 500) - PENALTY_AMOUNT;
       await user.save();
+
+      // Create penalty transaction
+      await new Transaction({
+        userId,
+        type: 'penalite',
+        amount: -PENALTY_AMOUNT,
+        description: `Penalite : commande rejetee (${orderEntry.order.recipeName})`
+      }).save();
 
       socket.emit('order:rejected', {
         orderId,
         recipeName: orderEntry.order.recipeName,
         satisfaction: user.satisfaction,
-        message: `Commande rejetee : ${orderEntry.order.recipeName} ! (-10 satisfaction)`
+        treasury: user.treasury,
+        message: `Commande rejetee : ${orderEntry.order.recipeName} ! (-10 satisfaction, -${PENALTY_AMOUNT}G)`
       });
 
-      // Check game over
-      if (user.satisfaction < 0) {
+      // Check game over (satisfaction or treasury)
+      if (user.satisfaction < 0 || user.treasury < 0) {
         socket.emit('service:gameover', {
           satisfaction: user.satisfaction,
-          message: 'Game Over ! La satisfaction est tombee en dessous de 0 !'
+          treasury: user.treasury,
+          message: user.treasury < 0
+            ? 'Game Over ! La tresorerie est tombee en dessous de 0 !'
+            : 'Game Over ! La satisfaction est tombee en dessous de 0 !'
         });
         stopServiceSession(userId);
         user.isServiceActive = false;

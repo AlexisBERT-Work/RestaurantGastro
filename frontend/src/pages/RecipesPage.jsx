@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { labService } from '../services/api';
+import Navbar from '../components/Navbar';
 import '../styles/RecipesPage.css';
 
 export default function RecipesPage({ token, onLogout }) {
@@ -24,14 +25,7 @@ export default function RecipesPage({ token, onLogout }) {
 
   return (
     <div className="recipes-container">
-      <header className="recipes-header">
-        <h1>Mon Livre de Recettes</h1>
-        <div className="header-actions">
-          <Link to="/lab" className="nav-button">Laboratoire</Link>
-          <Link to="/service" className="nav-button">Service</Link>
-          <button onClick={onLogout} className="logout-btn">Deconnexion</button>
-        </div>
-      </header>
+      <Navbar token={token} onLogout={onLogout} />
 
       <div className="recipes-content">
         {loading ? (

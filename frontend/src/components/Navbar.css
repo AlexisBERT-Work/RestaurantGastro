@@ -1,0 +1,111 @@
+.navbar {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px 28px;
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  border: 1px solid var(--glass-border);
+}
+
+.navbar-title {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 26px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.navbar-treasury {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 20px;
+  background: rgba(212, 165, 67, 0.08);
+  border: 1px solid rgba(212, 165, 67, 0.15);
+  border-radius: var(--radius-sm);
+}
+
+.treasury-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+.treasury-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: 'Playfair Display', serif;
+}
+
+.treasury-amount.low {
+  color: var(--danger);
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.navbar .nav-button {
+  padding: 10px 20px;
+  background: rgba(212, 165, 67, 0.1);
+  color: var(--gold);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 165, 67, 0.15);
+  transition: var(--transition);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+.navbar .nav-button:hover {
+  background: rgba(212, 165, 67, 0.2);
+  border-color: rgba(212, 165, 67, 0.35);
+}
+
+.navbar .nav-button.active {
+  background: rgba(212, 165, 67, 0.2);
+  border-color: rgba(212, 165, 67, 0.4);
+  box-shadow: 0 0 12px rgba(212, 165, 67, 0.1);
+}
+
+.navbar .logout-btn {
+  padding: 10px 20px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+}
+
+.navbar .logout-btn:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .navbar-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

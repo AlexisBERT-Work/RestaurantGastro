@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { serviceApi, labService, createSocket } from '../services/api';
+import Navbar from '../components/Navbar';
 import '../styles/ServicePage.css';
 
 export default function ServicePage({ token, onLogout }) {
   const [isServiceActive, setIsServiceActive] = useState(false);
   const [satisfaction, setSatisfaction] = useState(20);
+  const [treasury, setTreasury] = useState(null);
   const [orders, setOrders] = useState([]);
   const [discoveredRecipeIds, setDiscoveredRecipeIds] = useState([]);
   const [logs, setLogs] = useState([]);
   const [gameOver, setGameOver] = useState(false);
+  const [gameOverMessage, setGameOverMessage] = useState('');
   const [discoveredCount, setDiscoveredCount] = useState(0);
   const socketRef = useRef(null);
   const ordersRef = useRef(orders);
@@ -40,19 +43,21 @@ export default function ServicePage({ token, onLogout }) {
 
   // Load initial data
   useEffect(() => {
-    loadDiscoveredRecipes();
+    loadInitialData();
   }, [token]);
 
-  const loadDiscoveredRecipes = async () => {
+  const loadInitialData = async () => {
     try {
-      const [discoveredRes, recipesRes] = await Promise.all([
+      const [discoveredRes, recipesRes, stateRes] = await Promise.all([
         serviceApi.getDiscoveredRecipeIds(token),
-        labService.getUserRecipes(token)
+        labService.getUserRecipes(token),
+        serviceApi.getServiceState(token)
       ]);
       setDiscoveredRecipeIds(discoveredRes.data.recipeIds || []);
       setDiscoveredCount(recipesRes.data.recipes?.length || 0);
+      setTreasury(stateRes.data.treasury ?? 500);
     } catch (err) {
-      console.error('Failed to load discovered recipes:', err);
+      console.error('Failed to load initial data:', err);
     }
   };
 
@@ -86,6 +91,7 @@ export default function ServicePage({ token, onLogout }) {
 
     socket.on('service:started', (data) => {
       setSatisfaction(data.satisfaction);
+      if (data.treasury !== undefined) setTreasury(data.treasury);
       setIsServiceActive(true);
       setGameOver(false);
       setOrders([]);
@@ -104,18 +110,20 @@ export default function ServicePage({ token, onLogout }) {
         remainingTime: order.timeLimit
       };
       setOrders(prev => [...prev, newOrder]);
-      addLog(`Nouvelle commande : ${order.recipeName} (${order.difficulty})`, 'info');
+      addLog(`Nouvelle commande : ${order.recipeName} (${order.difficulty}) - ${order.price}G`, 'info');
     });
 
     socket.on('order:serve_result', (data) => {
       if (data.success) {
         setSatisfaction(data.satisfaction);
+        if (data.treasury !== undefined) setTreasury(data.treasury);
         setOrders(prev => prev.filter(o => o.id !== data.orderId));
         addLog(data.message, 'success');
       } else {
         if (data.satisfaction !== undefined) {
           setSatisfaction(data.satisfaction);
         }
+        if (data.treasury !== undefined) setTreasury(data.treasury);
         if (data.orderId) {
           setOrders(prev => prev.filter(o => o.id !== data.orderId));
         }
@@ -125,19 +133,23 @@ export default function ServicePage({ token, onLogout }) {
 
     socket.on('order:expired', (data) => {
       setSatisfaction(data.satisfaction);
+      if (data.treasury !== undefined) setTreasury(data.treasury);
       setOrders(prev => prev.filter(o => o.id !== data.orderId));
       addLog(data.message, 'error');
     });
 
     socket.on('order:rejected', (data) => {
       setSatisfaction(data.satisfaction);
+      if (data.treasury !== undefined) setTreasury(data.treasury);
       setOrders(prev => prev.filter(o => o.id !== data.orderId));
       addLog(data.message, 'warning');
     });
 
     socket.on('service:gameover', (data) => {
       setSatisfaction(data.satisfaction);
+      if (data.treasury !== undefined) setTreasury(data.treasury);
       setGameOver(true);
+      setGameOverMessage(data.message);
       setIsServiceActive(false);
       setOrders([]);
       addLog(data.message, 'error');
@@ -211,14 +223,7 @@ export default function ServicePage({ token, onLogout }) {
 
   return (
     <div className="service-container">
-      <header className="service-header">
-        <h1>Le Service</h1>
-        <div className="header-actions">
-          <Link to="/lab" className="nav-button">Laboratoire</Link>
-          <Link to="/recipes" className="nav-button">Recettes</Link>
-          <button onClick={onLogout} className="logout-btn">Deconnexion</button>
-        </div>
-      </header>
+      <Navbar token={token} onLogout={onLogout} treasury={treasury} />
 
       {/* Status Bar */}
       <div className="status-bar">
@@ -235,6 +240,12 @@ export default function ServicePage({ token, onLogout }) {
           </div>
           <span className="satisfaction-value" style={{ color: getSatisfactionColor() }}>
             {getSatisfactionEmoji()} {satisfaction}/20
+          </span>
+        </div>
+        <div className="status-item">
+          <span className="status-label">Tresorerie</span>
+          <span className={`status-value treasury-value ${treasury !== null && treasury < 50 ? 'low' : ''}`}>
+            {treasury !== null ? `${treasury}G` : '...'}
           </span>
         </div>
         <div className="status-item">
@@ -257,8 +268,8 @@ export default function ServicePage({ token, onLogout }) {
         <div className="game-over-overlay">
           <div className="game-over-box">
             <h2>GAME OVER</h2>
-            <p>Votre satisfaction est tombee en dessous de 0 !</p>
-            <p>Le restaurant a ete ferme.</p>
+            <p>{gameOverMessage || 'Le restaurant a ete ferme.'}</p>
+            <p>Satisfaction: {satisfaction} | Tresorerie: {treasury}G</p>
             <button onClick={() => { setGameOver(false); setSatisfaction(20); }} className="btn-restart">
               Reessayer
             </button>
@@ -310,6 +321,7 @@ export default function ServicePage({ token, onLogout }) {
                         {order.difficulty}
                       </span>
                     </div>
+                    <div className="order-price">{order.price}G</div>
 
                     {/* Timer bar */}
                     <div className="timer-bar-wrapper">
@@ -332,7 +344,7 @@ export default function ServicePage({ token, onLogout }) {
                           onClick={() => handleServeOrder(order)}
                           className="btn-serve"
                         >
-                          Servir
+                          Servir (+{order.price}G)
                         </button>
                       ) : (
                         <button className="btn-serve" disabled>
@@ -343,7 +355,7 @@ export default function ServicePage({ token, onLogout }) {
                         onClick={() => handleRejectOrder(order)}
                         className="btn-reject"
                       >
-                        Rejeter (-10)
+                        Rejeter (-15G)
                       </button>
                     </div>
 

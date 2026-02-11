@@ -79,6 +79,179 @@
   box-shadow: var(--shadow);
 }
 
+/* Shop Section */
+.shop-section {
+  margin-bottom: 36px;
+}
+
+.shop-section h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+}
+
+.shop-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.shop-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  transition: var(--transition);
+}
+
+.shop-card:hover {
+  border-color: rgba(212, 165, 67, 0.3);
+  background: var(--bg-card-hover);
+}
+
+.shop-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.shop-item-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.shop-item-category {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--glass);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.shop-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shop-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shop-cost {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 16px;
+}
+
+.shop-stock {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.shop-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.qty-input {
+  width: 50px;
+  padding: 6px 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.qty-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.btn-buy {
+  flex: 1;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #0a0a0f;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-buy:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(212, 165, 67, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-buy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Stock badge on ingredient cards */
+.ingredient-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ing-name {
+  font-size: 14px;
+}
+
+.stock-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(212, 165, 67, 0.15);
+  padding: 2px 8px;
+  border-radius: 100px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.ingredient-card.out-of-stock {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ingredient-card.out-of-stock .stock-badge {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
 .ingredients-section,
 .experiment-section,
 .discovered-section {

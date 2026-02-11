@@ -1,6 +1,7 @@
 const Recipe = require('../models/Recipe');
 const Ingredient = require('../models/Ingredient');
 const UserRecipe = require('../models/UserRecipe');
+const UserIngredient = require('../models/UserIngredient');
 
 // Algo de matching: compare les ingrédients combinés avec les ingrédients requis de chaque recette
 exports.experimentAndMatch = async (req, res) => {
@@ -10,6 +11,47 @@ exports.experimentAndMatch = async (req, res) => {
 
     if (!combinedIngredients || combinedIngredients.length === 0) {
       return res.status(400).json({ message: 'Aucun ingredient fourni' });
+    }
+
+    // Check stock for each ingredient used
+    const ingredientCounts = {};
+    for (const name of combinedIngredients) {
+      const lower = name.toLowerCase();
+      ingredientCounts[lower] = (ingredientCounts[lower] || 0) + 1;
+    }
+
+    const insufficientStock = [];
+    const ingredientDocs = {};
+    for (const [name, needed] of Object.entries(ingredientCounts)) {
+      const ingredient = await Ingredient.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+      if (!ingredient) {
+        insufficientStock.push({ name, needed, available: 0, reason: 'introuvable' });
+        continue;
+      }
+      ingredientDocs[name] = ingredient;
+      const userIng = await UserIngredient.findOne({ userId, ingredientId: ingredient._id });
+      const available = userIng ? userIng.quantity : 0;
+      if (available < needed) {
+        insufficientStock.push({ name: ingredient.name, needed, available });
+      }
+    }
+
+    if (insufficientStock.length > 0) {
+      return res.status(400).json({
+        message: 'Stock insuffisant pour certains ingredients',
+        insufficientStock
+      });
+    }
+
+    // Consume ingredients from stock
+    for (const [name, needed] of Object.entries(ingredientCounts)) {
+      const ingredient = ingredientDocs[name];
+      if (ingredient) {
+        await UserIngredient.updateOne(
+          { userId, ingredientId: ingredient._id },
+          { $inc: { quantity: -needed } }
+        );
+      }
     }
 
     // Get all recipes

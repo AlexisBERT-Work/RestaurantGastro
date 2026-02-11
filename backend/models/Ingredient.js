@@ -12,6 +12,10 @@ const ingredientSchema = new mongoose.Schema({
     enum: ['legume', 'viande', 'fromage', 'epice', 'sauce', 'autre'],
     default: 'autre'
   },
+  cost: {
+    type: Number,
+    default: 10
+  },
   description: {
     type: String,
     default: ''

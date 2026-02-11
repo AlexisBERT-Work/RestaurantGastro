@@ -75,6 +75,54 @@ export const serviceApi = {
   }
 };
 
+export const transactionService = {
+  getTreasury: async (token) => {
+    return await axios.get(`${API_URL}/transactions/treasury`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  getTreasuryHistory: async (token) => {
+    return await axios.get(`${API_URL}/transactions/history`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  getExpenseBreakdown: async (token) => {
+    return await axios.get(`${API_URL}/transactions/breakdown`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  getProfitPerDish: async (token) => {
+    return await axios.get(`${API_URL}/transactions/profit-per-dish`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  getTransactions: async (token, params = {}) => {
+    return await axios.get(`${API_URL}/transactions`, {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+};
+
+export const ingredientStockService = {
+  getUserStock: async (token) => {
+    return await axios.get(`${API_URL}/ingredients/stock`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
+  purchaseIngredient: async (ingredientId, quantity, token) => {
+    return await axios.post(`${API_URL}/ingredients/purchase`,
+      { ingredientId, quantity },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+};
+
 // Socket.io connection factory
 export const createSocket = (token) => {
   return io(SOCKET_URL, {

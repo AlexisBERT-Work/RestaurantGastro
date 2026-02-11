@@ -5,14 +5,15 @@ const UserRecipe = require('../models/UserRecipe');
 // Get user's service state (satisfaction, active status)
 exports.getServiceState = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('satisfaction isServiceActive restaurantName');
+    const user = await User.findById(req.userId).select('satisfaction isServiceActive restaurantName treasury');
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouve' });
     }
     res.json({
       satisfaction: user.satisfaction,
       isServiceActive: user.isServiceActive,
-      restaurantName: user.restaurantName
+      restaurantName: user.restaurantName,
+      treasury: user.treasury ?? 500
     });
   } catch (err) {
     console.error('Get service state error:', err);
