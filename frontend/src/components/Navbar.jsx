@@ -24,7 +24,7 @@ export default function Navbar({ token, onLogout, treasury: externalTreasury }) 
       const response = await transactionService.getTreasury(token);
       setTreasury(response.data.treasury);
     } catch (err) {
-      console.error('Failed to load treasury:', err);
+      console.error('Echec du chargement de la tresorerie:', err);
     }
   };
 

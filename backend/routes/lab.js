@@ -3,7 +3,7 @@ const labController = require('../controllers/labController');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
-// Protected routes - require JWT token
+// Routes protegees - JWT requis
 router.post('/experiment', authMiddleware, labController.experimentAndMatch);
 router.get('/recipes/all', authMiddleware, labController.getAllRecipes);
 router.get('/recipes/my', authMiddleware, labController.getUserRecipes);

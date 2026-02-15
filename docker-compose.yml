@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: gastrochef-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - gastrochef-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gastrochef-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/gastrochef
+      - JWT_SECRET=gastrochef_secret_key_2024
+      - PORT=5000
+      - FRONTEND_URL=http://localhost
+    depends_on:
+      - mongodb
+    networks:
+      - gastrochef-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gastrochef-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - gastrochef-network
+
+volumes:
+  mongo-data:
+
+networks:
+  gastrochef-network:
+    driver: bridge

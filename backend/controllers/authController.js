@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Register
+// Inscription
 exports.register = async (req, res) => {
   try {
     const { restaurantName, email, password, passwordConfirm } = req.body;
@@ -42,12 +42,12 @@ exports.register = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Register Error:', err);
+    console.error('Erreur inscription:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };
 
-// Login
+// Connexion
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -81,7 +81,7 @@ exports.login = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Login Error:', err);
+    console.error('Erreur connexion:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };

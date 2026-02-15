@@ -164,3 +164,14 @@ button[type="submit"]:disabled {
   color: var(--gold-light);
   text-shadow: 0 0 20px rgba(212, 165, 67, 0.3);
 }
+
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 32px 24px;
+    margin: 0 8px;
+  }
+
+  .auth-box h1 {
+    font-size: 24px;
+  }
+}

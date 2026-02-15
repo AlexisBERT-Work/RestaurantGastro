@@ -5,7 +5,7 @@ exports.getAllIngredients = async (req, res) => {
     const ingredients = await Ingredient.find();
     res.json({ ingredients });
   } catch (err) {
-    console.error('Get ingredients Error:', err);
+    console.error('Erreur de recuperation des ingredients:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
@@ -31,7 +31,7 @@ exports.addIngredient = async (req, res) => {
       ingredient
     });
   } catch (err) {
-    console.error('Add ingredient Error:', err);
+    console.error('Erreur lors de l\'ajout d\'ingredient:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };

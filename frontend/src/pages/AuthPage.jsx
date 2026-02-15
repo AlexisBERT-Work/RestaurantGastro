@@ -41,7 +41,7 @@ export default function AuthPage({ onLogin }) {
 
       onLogin(response.data.token, response.data.user);
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred');
+      setError(err.response?.data?.message || 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }

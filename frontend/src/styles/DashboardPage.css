@@ -219,7 +219,24 @@
 }
 
 @media (max-width: 600px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .dashboard-content {
+    padding: 16px;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profit-table {
+    font-size: 12px;
+  }
+
+  .profit-table th,
+  .profit-table td {
+    padding: 8px 6px;
   }
 }

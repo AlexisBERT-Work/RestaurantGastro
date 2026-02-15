@@ -31,13 +31,19 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 500
   },
+  stars: {
+    type: Number,
+    default: 3,
+    min: 0,
+    max: 3
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Hash password before saving
+// Hash le mot de passe avant sauvegarde
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   try {
@@ -49,7 +55,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Compare password method
+// Compare les mots de passe
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcryptjs.compare(candidatePassword, this.password);
 };

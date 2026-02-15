@@ -17,7 +17,7 @@ export default function RecipesPage({ token, onLogout }) {
       const response = await labService.getUserRecipes(token);
       setRecipes(response.data.recipes || []);
     } catch (err) {
-      console.error('Failed to load recipes:', err);
+      console.error('Echec du chargement des recettes:', err);
     } finally {
       setLoading(false);
     }

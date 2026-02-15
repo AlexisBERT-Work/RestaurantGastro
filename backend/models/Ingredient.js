@@ -16,6 +16,11 @@ const ingredientSchema = new mongoose.Schema({
     type: Number,
     default: 10
   },
+  shelfLife: {
+    type: Number,
+    default: 3,
+    min: 1
+  },
   description: {
     type: String,
     default: ''

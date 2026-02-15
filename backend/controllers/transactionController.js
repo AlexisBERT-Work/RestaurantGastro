@@ -3,7 +3,7 @@ const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Ingredient = require('../models/Ingredient');
 
-// Get all transactions for user
+// Recupere toutes les transactions de l'utilisateur
 exports.getTransactions = async (req, res) => {
   try {
     const { type, limit = 50, skip = 0 } = req.query;
@@ -19,23 +19,23 @@ exports.getTransactions = async (req, res) => {
 
     res.json({ transactions });
   } catch (err) {
-    console.error('Get transactions Error:', err);
+    console.error('Erreur de recuperation des transactions:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
-// Get current treasury
+// Recupere la tresorerie actuelle
 exports.getTreasury = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('treasury');
     res.json({ treasury: user.treasury ?? 500 });
   } catch (err) {
-    console.error('Get treasury Error:', err);
+    console.error('Erreur de recuperation de la tresorerie:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
-// Get treasury history for line chart
+// Recupere l'historique de tresorerie pour le graphique
 exports.getTreasuryHistory = async (req, res) => {
   try {
     const transactions = await Transaction.find({ userId: req.userId })
@@ -56,12 +56,12 @@ exports.getTreasuryHistory = async (req, res) => {
 
     res.json({ history });
   } catch (err) {
-    console.error('Get treasury history Error:', err);
+    console.error('Erreur de recuperation de l\'historique de tresorerie:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
-// Get expense breakdown for pie chart
+// Recupere la repartition des depenses pour le camembert
 exports.getExpenseBreakdown = async (req, res) => {
   try {
     const breakdown = await Transaction.aggregate([
@@ -70,12 +70,12 @@ exports.getExpenseBreakdown = async (req, res) => {
     ]);
     res.json({ breakdown });
   } catch (err) {
-    console.error('Get expense breakdown Error:', err);
+    console.error('Erreur de recuperation de la repartition des depenses:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
-// Get profit per dish
+// Recupere le benefice par plat
 exports.getProfitPerDish = async (req, res) => {
   try {
     const sales = await Transaction.aggregate([
@@ -111,7 +111,7 @@ exports.getProfitPerDish = async (req, res) => {
 
     res.json({ profitPerDish: result });
   } catch (err) {
-    console.error('Get profit per dish Error:', err);
+    console.error('Erreur de recuperation du benefice par plat:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };

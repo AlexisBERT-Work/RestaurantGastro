@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SocketProvider } from './contexts/SocketContext';
 import AuthPage from './pages/AuthPage';
 import LabPage from './pages/LabPage';
 import RecipesPage from './pages/RecipesPage';
@@ -15,7 +16,7 @@ function App() {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
-      // Optionally decode JWT to get user info
+      // Optionnel: decoder le JWT pour recuperer l'utilisateur
     }
   }, []);
 
@@ -32,30 +33,32 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route 
-          path="/" 
-          element={token ? <Navigate to="/lab" /> : <AuthPage onLogin={handleLogin} />} 
-        />
-        <Route 
-          path="/lab" 
-          element={token ? <LabPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
-        />
-        <Route 
-          path="/recipes" 
-          element={token ? <RecipesPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
-        />
-        <Route
-          path="/service"
-          element={token ? <ServicePage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/dashboard"
-          element={token ? <DashboardPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <SocketProvider token={token}>
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/" 
+            element={token ? <Navigate to="/lab" /> : <AuthPage onLogin={handleLogin} />} 
+          />
+          <Route 
+            path="/lab" 
+            element={token ? <LabPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/recipes" 
+            element={token ? <RecipesPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />} 
+          />
+          <Route
+            path="/service"
+            element={token ? <ServicePage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/dashboard"
+            element={token ? <DashboardPage token={token} onLogout={handleLogout} /> : <Navigate to="/" />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </SocketProvider>
   );
 }
 

@@ -1,9 +1,18 @@
 const Recipe = require('../models/Recipe');
-const Ingredient = require('../models/Ingredient');
 const UserRecipe = require('../models/UserRecipe');
-const UserIngredient = require('../models/UserIngredient');
+const { checkAndPrepareStock, consumeStock } = require('../services/stockService');
 
-// Algo de matching: compare les ingrédients combinés avec les ingrédients requis de chaque recette
+// Convertit une liste de noms d'ingredients en format requiredIngredients [{name, quantity}]
+function aggregateIngredients(names) {
+  const counts = {};
+  for (const name of names) {
+    const lower = name.toLowerCase();
+    counts[lower] = (counts[lower] || 0) + 1;
+  }
+  return Object.entries(counts).map(([name, quantity]) => ({ name, quantity }));
+}
+
+// Algo de matching: compare les ingredients combines avec les ingredients requis
 exports.experimentAndMatch = async (req, res) => {
   try {
     const { combinedIngredients } = req.body;
@@ -13,72 +22,39 @@ exports.experimentAndMatch = async (req, res) => {
       return res.status(400).json({ message: 'Aucun ingredient fourni' });
     }
 
-    // Check stock for each ingredient used
-    const ingredientCounts = {};
-    for (const name of combinedIngredients) {
-      const lower = name.toLowerCase();
-      ingredientCounts[lower] = (ingredientCounts[lower] || 0) + 1;
-    }
+    // Agrege et verifie le stock via stockService
+    const required = aggregateIngredients(combinedIngredients);
+    const stockCheck = await checkAndPrepareStock(userId, required);
 
-    const insufficientStock = [];
-    const ingredientDocs = {};
-    for (const [name, needed] of Object.entries(ingredientCounts)) {
-      const ingredient = await Ingredient.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
-      if (!ingredient) {
-        insufficientStock.push({ name, needed, available: 0, reason: 'introuvable' });
-        continue;
-      }
-      ingredientDocs[name] = ingredient;
-      const userIng = await UserIngredient.findOne({ userId, ingredientId: ingredient._id });
-      const available = userIng ? userIng.quantity : 0;
-      if (available < needed) {
-        insufficientStock.push({ name: ingredient.name, needed, available });
-      }
-    }
-
-    if (insufficientStock.length > 0) {
+    if (!stockCheck.ok) {
       return res.status(400).json({
         message: 'Stock insuffisant pour certains ingredients',
-        insufficientStock
+        insufficientStock: stockCheck.insufficientStock
       });
     }
 
-    // Consume ingredients from stock
-    for (const [name, needed] of Object.entries(ingredientCounts)) {
-      const ingredient = ingredientDocs[name];
-      if (ingredient) {
-        await UserIngredient.updateOne(
-          { userId, ingredientId: ingredient._id },
-          { $inc: { quantity: -needed } }
-        );
-      }
-    }
+    // Consomme les ingredients du stock
+    await consumeStock(userId, stockCheck.ingredientUpdates);
 
-    // Get all recipes
+    // Recupere toutes les recettes
     const recipes = await Recipe.find();
 
     let matchedRecipe = null;
-    let matchScore = 0;
 
-    // Check each recipe
+    // Verifie chaque recette
     for (const recipe of recipes) {
-      const requiredIngredientNames = recipe.requiredIngredients.map(ing => ing.name.toLowerCase());
-      const combinedIngredientNames = combinedIngredients.map(ing => ing.toLowerCase());
+      const requiredNames = recipe.requiredIngredients.map(ing => ing.name.toLowerCase());
+      const combinedNames = combinedIngredients.map(ing => ing.toLowerCase());
 
-      // Simple matching: check if all required ingredients are in combined ingredients
-      const allPresent = requiredIngredientNames.every(required => 
-        combinedIngredientNames.includes(required)
-      );
-
-      if (allPresent) {
+      // Matching simple: verifie que tous les ingredients requis sont presents
+      if (requiredNames.every(r => combinedNames.includes(r))) {
         matchedRecipe = recipe;
-        matchScore = requiredIngredientNames.length;
         break;
       }
     }
 
     if (matchedRecipe) {
-      // Recipe found! Save as discovered
+      // Recette trouvee: sauvegarde en tant que decouverte
       await UserRecipe.updateOne(
         { userId, recipeId: matchedRecipe._id },
         { discovered: true, discoveredAt: new Date() },
@@ -91,30 +67,29 @@ exports.experimentAndMatch = async (req, res) => {
         recipe: matchedRecipe
       });
     } else {
-      // No match
       return res.json({
         success: false,
         message: 'Combinaison invalide. Ingredients detruits !'
       });
     }
   } catch (err) {
-    console.error('Experiment Error:', err);
+    console.error('Erreur lors de l\'experience:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };
 
-// Get all available recipes for experimentation
+// Recupere toutes les recettes disponibles pour experimentation
 exports.getAllRecipes = async (req, res) => {
   try {
     const recipes = await Recipe.find();
     res.json({ recipes });
   } catch (err) {
-    console.error('Get recipes Error:', err);
+    console.error('Erreur de recuperation des recettes:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
-// Get user's discovered recipes
+// Recupere les recettes decouvertes par l'utilisateur
 exports.getUserRecipes = async (req, res) => {
   try {
     const userId = req.userId;
@@ -123,7 +98,7 @@ exports.getUserRecipes = async (req, res) => {
     
     res.json({ recipes: userRecipes.map(ur => ur.recipeId).filter(r => r !== null) });
   } catch (err) {
-    console.error('Get user recipes Error:', err);
+    console.error('Erreur de recuperation des recettes utilisateur:', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };

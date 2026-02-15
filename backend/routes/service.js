@@ -3,7 +3,7 @@ const serviceController = require('../controllers/serviceController');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
-// All routes are protected
+// Toutes les routes sont protegees
 router.get('/state', authMiddleware, serviceController.getServiceState);
 router.post('/start', authMiddleware, serviceController.startService);
 router.post('/stop', authMiddleware, serviceController.stopService);

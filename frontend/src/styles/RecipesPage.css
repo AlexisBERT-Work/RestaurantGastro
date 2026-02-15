@@ -182,13 +182,27 @@
 }
 
 @media (max-width: 768px) {
+  .recipes-container {
+    padding: 12px;
+  }
+
   .recipes-header {
     flex-direction: column;
     gap: 16px;
     text-align: center;
   }
 
+  .recipes-content {
+    padding: 16px;
+  }
+
   .recipes-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .recipes-container {
+    padding: 8px;
   }
 }
